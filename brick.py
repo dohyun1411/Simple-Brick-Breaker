@@ -48,7 +48,7 @@ class Brick:
         return self.colors[color_idx]
 
 
-def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id):
+def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id, brick_size=(BRICK_WIDTH, BRICK_HEIGHT)):
     """
     Create random bricks.
     Update param bricks.
@@ -59,6 +59,7 @@ def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_
     num_level(int): param num_level detemines the number of the bricks.
     brick_level(int): param brick_level detemines the brick_num of the bricks.
     last_brick_id(int): the id of last brick
+    brick_size(tuple): (width, height) of the brick
 
     return
     None
@@ -75,13 +76,13 @@ def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_
         brick_id = last_brick_id + i
         i += 1
         hardness = round(random.uniform(0.7, 1.0)*hardness_level)
-        brick = Brick(brick_id=brick_id, hardness=hardness)
-        brick.set_pos((idx*BRICK_WIDTH, 2*BRICK_HEIGHT))
+        brick = Brick(brick_id=brick_id, brick_width=brick_size[0], brick_height=brick_size[1], hardness=hardness)
+        brick.set_pos((idx*brick_size[0], 2*brick_size[1]))
         bricks[brick.brick_id] = brick
         # brick.print_brick()
 
 
-def process_falling(bricks, screen_width, screen_height):
+def process_falling(bricks, screen_width, screen_height, brick_size=(BRICK_WIDTH, BRICK_HEIGHT)):
     """
     Every brick will fall down one line, and then new bricks will be created at the top.
     Update param bricks
@@ -91,6 +92,7 @@ def process_falling(bricks, screen_width, screen_height):
     bricks(dictionary): the store of the bricks
     screen_width(int): width of the screen
     screen_height(int): height of the screen
+    brick_size(tuple): (width, height) of the brick
 
     return
     hit(bool): True if the lowest brick hit the bottom, False otherwise
@@ -103,15 +105,15 @@ def process_falling(bricks, screen_width, screen_height):
         last_brick_id = max(last_brick_id, brick.brick_id)
 
         prev_pos = brick.pos
-        cur_pos = (prev_pos[0], prev_pos[1] + BRICK_HEIGHT)
+        cur_pos = (prev_pos[0], prev_pos[1] + brick_size[1])
         brick.set_pos(cur_pos)
         bricks[brick.brick_id] = brick
 
-        if not hit and cur_pos[1]>=(screen_height - 2*BRICK_HEIGHT): hit = True
+        if not hit and cur_pos[1]>=(screen_height - 2*brick_size[1]): hit = True
     
-    max_num = screen_width//BRICK_WIDTH
+    max_num = screen_width//brick_size[0]
     num_level = random.randint(1, max_num) # TO DO: find proper num_level
     hardness_level = last_brick_id//max_num + 1
-    create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id)
+    create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id, brick_size)
 
     return hit
