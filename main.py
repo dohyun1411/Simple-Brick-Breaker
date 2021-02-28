@@ -3,6 +3,7 @@ import random
 import pygame
 import brick as br
 import bullet as bu
+# import collision_checker as cc
 
 
 if __name__=="__main__":
@@ -41,12 +42,16 @@ if __name__=="__main__":
     theta = 90
     dtheta = 0
     angular_speed = 0.05
-    bullet_speed = 0.1
+    bullet_speed = 0.4
+    # falling_speed = random.randint(1500, 5000)
+    falling_speed = 1000
+    shooting_interval = 1000
     radius = 5
     GUN_RECT = (220, 600, 40, 40)
     GUN_WIDTH = 3
     GUN_POS = (240, 620)
     arrow_x, arrow_y = 237.5, 605
+    hit = False
 
     while running:
 
@@ -80,13 +85,14 @@ if __name__=="__main__":
         # print(new_arrow_x, new_arrow_y)
 
         elapsed_time = pygame.time.get_ticks() - start_ticks
-        falling_speed = random.randint(1500, 5000)
         step = prev_step + 1 if (prev_step + 1)==elapsed_time//falling_speed else prev_step
         if step>prev_step:
             hit = br.process_falling(bricks, SCREEN_WIDTH, SCREEN_HEIGHT)
             prev_step = step
 
-        shooting_interval = 500
+        score_render = score_font.render("SCORE : {}".format(elapsed_time//1000), True, BLACK)
+        screen.blit(score_render, (180, BRICK_HEIGHT))
+
         shooting_step = prev_shooting_step + 1 if (prev_shooting_step + 1)==elapsed_time//shooting_interval else prev_shooting_step
         if shooting_step>prev_shooting_step:
             bullet = bu.Bullet(last_bullet_id + 1, GUN_POS, theta, bullet_speed)
@@ -106,7 +112,7 @@ if __name__=="__main__":
             # print(x, y)
             if x<=0 or x>=SCREEN_WIDTH:
                 dx = -1*dx
-            if y<=2*BRICK_HEIGHT: # MUST BE MODIFIED
+            if y<=2*BRICK_HEIGHT:
                 dy = -1*dy
             
             if y>=SCREEN_HEIGHT:
@@ -123,13 +129,66 @@ if __name__=="__main__":
             prev_shooting_step = shooting_step
         
         for bullet_id in deleted_bullets:
-            del(bullets[bullet_id])
+            try:
+                del(bullets[bullet_id])
+            except KeyError:
+                pass
         # print(bullets)
 
-        score_render = score_font.render("SCORE : {}".format(elapsed_time//1000), True, BLACK)
-        screen.blit(score_render, (180, BRICK_HEIGHT))
 
+        deleted_bricks = []
         for brick in bricks.values():
+            
+            brick_rect = pygame.Rect(*brick.rect)
+            for bullet in bullets.values():
+                left = bullet.pos[0] - bullet.radius
+                top = bullet.pos[1] - bullet.radius
+                bullet_rect = pygame.Rect(left, top, 2*bullet.radius, 2*bullet.radius)
+
+                # threshold = 10
+                if brick_rect.colliderect(bullet_rect):
+                    # print("COLLISION")
+                    # print(brick.rect)
+                    # print(bullet.pos)
+                    # pygame.time.delay(1000)
+                    
+                    a = abs(bullet_rect.left - (brick_rect.left + brick_rect.width))
+                    b = abs((bullet_rect.left + bullet_rect.width) - brick_rect.left)
+                    c = abs(bullet_rect.top - (brick_rect.top + brick_rect.height))
+                    d = abs((bullet_rect.top + bullet_rect.height) - brick_rect.top)
+
+                    left_collision = min(a, b)
+                    top_collision = min(c, d)
+                    # print(a, b, c, d)
+                    if left_collision < top_collision:
+                        # print("dx")
+                        bullet.dx = -1*bullet.dx
+                    else:
+                        # print("dy")
+                        bullet.dy = -1*bullet.dy
+                    
+                    # print(abs(bullet_rect.left - (brick_rect.left + brick_rect.width)), abs((bullet_rect.left + bullet_rect.right) -brick_rect.left), abs(bullet_rect.top - (brick_rect.top + brick_rect.height)), abs((bullet_rect.top + bullet_rect.height) -brick_rect.top))
+
+
+
+                # collision_checker = cc.collision_checker(brick.rect, (bullet.pos, bullet.radius))
+                # # if collision_checker: print(collision_checker)
+                # if collision_checker == 1: bullet.dy = -1*dy
+                # elif collision_checker ==2: bullet.dx = -1*dx
+                # else: continue
+                
+                    bullets[bullet.bullet_id] = bullet
+
+
+                    brick.hardness -= 1
+                    # brick.hardness = 0
+                    if brick.hardness<=0:
+                        deleted_bricks.append(brick.brick_id)
+                        continue
+
+
+
+
             pygame.draw.rect(screen, brick.color, brick.rect)
             hardness = hardness_font.render("{}".format(brick.hardness), True, WHITE)
             rect = brick.rect
@@ -138,10 +197,23 @@ if __name__=="__main__":
             else:
                 hardness_pos = (rect[0] + rect[2]/3.5, rect[1] + rect[3]/3.5)
             screen.blit(hardness, hardness_pos)
-              
+        
+        for brick_id in deleted_bricks:
+            try:
+                del(bricks[brick_id])
+            except:
+                pass
+        
+
+        
+        
+
+
+
+        # print(len(bullets))
+        # print(len(bricks))
         
         pygame.display.update()
-        # pygame.time.delay(1000)
         # if hit: running = False
 
     pygame.time.delay(2000)
