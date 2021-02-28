@@ -48,7 +48,7 @@ class Brick:
         return self.colors[color_idx]
 
 
-def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id=-1):
+def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id):
     """
     Create random bricks.
     Update param bricks.
@@ -93,11 +93,11 @@ def process_falling(bricks, screen_width, screen_height):
     screen_height(int): height of the screen
 
     return
-    hit(bool): True if the lowest brick does not hit the bottom, False otherwise
+    hit(bool): True if the lowest brick hit the bottom, False otherwise
     """
 
-    last_brick_id = -1
-    hit = True
+    last_brick_id = 0
+    hit = False
     for brick in bricks.values():
 
         last_brick_id = max(last_brick_id, brick.brick_id)
@@ -107,7 +107,7 @@ def process_falling(bricks, screen_width, screen_height):
         brick.set_pos(cur_pos)
         bricks[brick.brick_id] = brick
 
-        if hit and cur_pos[1]>=(screen_height - 2*BRICK_HEIGHT): hit = False
+        if not hit and cur_pos[1]>=(screen_height - 2*BRICK_HEIGHT): hit = True
     
     max_num = screen_width//BRICK_WIDTH
     num_level = random.randint(1, max_num) # TO DO: find proper num_level
