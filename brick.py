@@ -51,6 +51,7 @@ class Brick:
 def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id=-1):
     """
     Create random bricks.
+    Update param bricks.
 
     param
     bricks(dictionary): the store of the bricks
@@ -60,7 +61,7 @@ def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_
     last_brick_id(int): the id of last brick
 
     return
-    bricks(dictionary): the store of the bricks (updated)
+    None
     """
 
     rand_idx = [i for i in range(max_num)]
@@ -78,13 +79,12 @@ def create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_
         brick.set_pos((idx*BRICK_WIDTH, 2*BRICK_HEIGHT))
         bricks[brick.brick_id] = brick
         # brick.print_brick()
-    
-    return bricks
 
 
 def process_falling(bricks, screen_width, screen_height):
     """
     Every brick will fall down one line, and then new bricks will be created at the top.
+    Update param bricks
     Additionally, check whether the lowest brick hits the bottom.
 
     param
@@ -93,8 +93,7 @@ def process_falling(bricks, screen_width, screen_height):
     screen_height(int): height of the screen
 
     return
-    (bool) True if the lowest brick does not hit the bottom, False otherwise
-    bricks(dictionary): the store of the bricks (updated)
+    hit(bool): True if the lowest brick does not hit the bottom, False otherwise
     """
 
     last_brick_id = -1
@@ -113,6 +112,6 @@ def process_falling(bricks, screen_width, screen_height):
     max_num = screen_width//BRICK_WIDTH
     num_level = random.randint(1, max_num) # TO DO: find proper num_level
     hardness_level = last_brick_id//max_num + 1
-    bricks = create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id)
+    create_random_bricks(bricks, max_num, num_level, hardness_level, last_brick_id)
 
-    return hit, bricks
+    return hit
