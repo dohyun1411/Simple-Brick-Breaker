@@ -46,13 +46,16 @@ if __name__=="__main__":
     bullet_speed = 0.3
     # falling_speed = random.randint(1500, 5000)
     falling_speed = 1500
-    shooting_interval = 1000
+    shooting_interval = 700
     radius = 5
     GUN_RECT = (220, 600, 40, 40)
     GUN_WIDTH = 3
     GUN_POS = (240, 620)
     arrow_x, arrow_y = 237.5, 605
+    speed_up_count = 0
+    speed_up = False
     hit = False
+    last_score = 0
 
     while running:
 
@@ -91,10 +94,33 @@ if __name__=="__main__":
             hit = br.process_falling(bricks, SCREEN_WIDTH, SCREEN_HEIGHT)
             prev_step = step
 
-        score_render = score_font.render("SCORE : {}".format(elapsed_time//1000), True, BLACK)
+        score = elapsed_time//1000
+        score_render = score_font.render("SCORE : {}".format(score), True, BLACK)
         screen.blit(score_render, (180, BRICK_HEIGHT))
 
+
+        # print(speed_up)
+        # if not speed_up and random.random() < 0.01: speed_up = True
+        # speed_up = True
+        # if speed_up:
+        #     if score > last_score: speed_up_count += 1
+        #     shooting_interval = 350
+        #     item_msg = score_font.render("Speed Up", True, (255, 153, 51))
+        #     item_msg_rect = item_msg.get_rect(center=(int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT - 2*BRICK_HEIGHT)))
+        #     screen.blit(item_msg, item_msg_rect)
+        #     last_score = score
+        #     if speed_up_count > 5:
+        #         shooting_interval = 700
+        #         speed_up = False
+
+        # if 2 <= score <= 7:
+        #     shooting_interval = 350
+        # else:
+        #     shooting_interval = 700
+        
         shooting_step = prev_shooting_step + 1 if (prev_shooting_step + 1)==elapsed_time//shooting_interval else prev_shooting_step
+        # print(shooting_step, prev_shooting_step, elapsed_time//shooting_interval)
+
         if shooting_step>prev_shooting_step:
             bullet = bu.Bullet(last_bullet_id + 1, GUN_POS, theta, bullet_speed)
             bullets[bullet.bullet_id] = bullet
@@ -203,24 +229,32 @@ if __name__=="__main__":
             try:
                 del(bricks[brick_id])
             except:
-                pass
-        
+                pass           
 
-        
-        
-
-
-
-        # print(len(bullets))
-        # print(len(bricks))
         
         pygame.display.update()
         if hit: running = False
 
+
     msg = game_over_font.render("Game Over", True, BLACK)
     msg_rect = msg.get_rect(center=(int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT/2)))
     screen.blit(msg, msg_rect)
-    pygame.display.update()
 
-    pygame.time.delay(2000)
+    new_record = False
+    with open("score.txt", 'r') as f:
+        best_score = int(f.read())
+        # print(best_score)
+        if score > best_score:
+            score_msg = game_over_font.render("<New Record>", True, (255, 153, 51))
+            score_msg_rect = score_msg.get_rect(center=(int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT/2 - 60)))
+            screen.blit(score_msg, score_msg_rect)
+            new_record = True
+
+    pygame.display.update()
+    
+    if new_record:
+        with open("score.txt", 'w') as f:
+            f.write("{}".format(score))
+
+    pygame.time.delay(3000)
     pygame.quit()

@@ -109,7 +109,7 @@ def process_falling(bricks, screen_width, screen_height, brick_size=(BRICK_WIDTH
         brick.set_pos(cur_pos)
         bricks[brick.brick_id] = brick
 
-        if not hit and cur_pos[1]>=(screen_height - 2*brick_size[1]): hit = True
+        if not hit and cur_pos[1]>=(screen_height - brick_size[1]): hit = True
     
     max_num = screen_width//brick_size[0]
     # num_level = random.randint(1, max_num) # TO DO: find proper num_level
