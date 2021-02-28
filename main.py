@@ -43,9 +43,9 @@ if __name__=="__main__":
     theta = 90
     dtheta = 0
     angular_speed = 0.05
-    bullet_speed = 0.4
+    bullet_speed = 0.3
     # falling_speed = random.randint(1500, 5000)
-    falling_speed = 1000
+    falling_speed = 1500
     shooting_interval = 1000
     radius = 5
     GUN_RECT = (220, 600, 40, 40)
@@ -221,6 +221,6 @@ if __name__=="__main__":
     msg_rect = msg.get_rect(center=(int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT/2)))
     screen.blit(msg, msg_rect)
     pygame.display.update()
-    
+
     pygame.time.delay(2000)
     pygame.quit()
