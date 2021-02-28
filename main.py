@@ -28,6 +28,7 @@ if __name__=="__main__":
 
     hardness_font = pygame.font.Font(None, 25)
     score_font = pygame.font.Font(None, 30)
+    game_over_font = pygame.font.Font(None, 50)
     
     pygame.display.set_caption("swipe_brick_breaker")
 
@@ -214,7 +215,12 @@ if __name__=="__main__":
         # print(len(bricks))
         
         pygame.display.update()
-        # if hit: running = False
+        if hit: running = False
 
+    msg = game_over_font.render("Game Over", True, BLACK)
+    msg_rect = msg.get_rect(center=(int(SCREEN_WIDTH/2), int(SCREEN_HEIGHT/2)))
+    screen.blit(msg, msg_rect)
+    pygame.display.update()
+    
     pygame.time.delay(2000)
     pygame.quit()
