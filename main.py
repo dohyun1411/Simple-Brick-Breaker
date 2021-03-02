@@ -56,6 +56,7 @@ if __name__=="__main__":
     speed_up = False
     hit = False
     last_score = 0
+    bullet_power = 1
 
     while running:
 
@@ -207,7 +208,7 @@ if __name__=="__main__":
                     bullets[bullet.bullet_id] = bullet
 
 
-                    brick.hardness -= 1
+                    brick.hardness -= bullet_power
                     # brick.hardness = 0
                     if brick.hardness<=0:
                         deleted_bricks.append(brick.brick_id)
