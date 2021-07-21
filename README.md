@@ -1,4 +1,11 @@
-# simple_shooting_game
-simple shooting game using pygame
+# simple_brick_breaker
 
-To play the game, run main.py.
+## requirements
+'''
+pip install pygame
+'''
+
+## To play the game..
+'''
+python main.py
+...
