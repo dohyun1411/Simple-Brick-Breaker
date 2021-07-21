@@ -1,11 +1,11 @@
 # simple_brick_breaker
 
-## requirements
-'''
+### requirements
+```
 pip install pygame
-'''
+```
 
-## To play the game..
-'''
+### To play the game..
+```
 python main.py
-...
+```
